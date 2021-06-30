@@ -49,7 +49,7 @@ public class UserService {
     }
 
     @Transactional
-    public void addTaskForUser(Long taskId, Long userId) {
+    public void addTaskForUser(Long userId, Long taskId) {
         Optional<User> user = userRepository.findById(userId);
         Optional<Task> task = taskRepository.findById(taskId);
         if (user.isPresent() && task.isPresent()) {
@@ -58,7 +58,7 @@ public class UserService {
             taskRepository.save(task.get());
             userRepository.save(user.get());
         } else {
-            throw new RuntimeException("Unknown User or Project");
+            throw new IllegalArgumentException("Unknown User or Task");
         }
     }
 

@@ -14,5 +14,35 @@ public class CreateCommand extends Command {
         super(userService, projectService, taskService);
     }
 
+    public boolean createEntity(String[] values) {
+        if (values[0].equals("1") && values.length == 4) {
+            createNewUser(values);
+        } else if (values[0].equals("2") && values.length == 3) {
+            createNewProject(values);
+        } else if (values[0].equals("3") && values.length == 3) {
+            createNewTask(values);
+        } else {
+            return false;
+        }
+        return true;
+    }
 
+    private void createNewUser(String[] values) {
+        String firstname = values[1];
+        String lastname = values[2];
+        String phone = values[3];
+        getUserService().save(firstname, lastname, phone);
+    }
+
+    private void createNewProject(String[] values) {
+        String title = values[1];
+        String description = values[2];
+        getProjectService().save(title, description);
+    }
+
+    private void createNewTask(String[] values) {
+        String title = values[1];
+        String description = values[2];
+        getTaskService().save(title, description);
+    }
 }

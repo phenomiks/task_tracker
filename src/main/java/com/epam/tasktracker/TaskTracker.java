@@ -1,7 +1,7 @@
 package com.epam.tasktracker;
 
-import com.epam.tasktracker.entities.Project;
-import com.epam.tasktracker.entities.User;
+import com.epam.tasktracker.commands.*;
+import com.epam.tasktracker.entities.Task;
 import com.epam.tasktracker.services.ProjectService;
 import com.epam.tasktracker.services.TaskService;
 import com.epam.tasktracker.services.UserService;
@@ -15,14 +15,23 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
 
 @Component
 public class TaskTracker implements CommandLineRunner {
     private final UserService userService;
     private final ProjectService projectService;
     private final TaskService taskService;
+
+    @Autowired
+    private CreateCommand createCommand;
+    @Autowired
+    private DeleteCommand deleteCommand;
+    @Autowired
+    private ShowCommand showCommand;
+    @Autowired
+    private AssignCommand assignCommand;
+    @Autowired
+    private ReportCommand reportCommand;
 
     private BufferedReader bf;
 
@@ -61,7 +70,7 @@ public class TaskTracker implements CommandLineRunner {
                 "EXIT - to exit the application.\n");
 
         while (true) {
-            System.out.println("Enter the basic command");
+            System.out.println("Enter the basic command. Enter 'exit' to terminate the application");
             String command = bfReadLine();
 
             if (command.equalsIgnoreCase(ConsoleCommands.CREATE.name())) {
@@ -93,123 +102,99 @@ public class TaskTracker implements CommandLineRunner {
     }
 
     private void doCreateCommand() {
-        System.out.println("Введите команду в следующем виде для создания:\n" +
-                "- пользователя: 1/firstname/lastname/phone\n" +
-                "- проекта: 2/title/description\n" +
-                "- задачи: 3/title/description");
+        System.out.println("Enter the command to create\n" +
+                "- user: 1/firstname/lastname/phone\n" +
+                "- project: 2/title/description\n" +
+                "- task: 3/title/description");
 
         String command = bfReadLine();
         String[] values = command.split("/");
 
-        if (values[0].equals("1") && values.length == 4) {
-            String firstname = values[1];
-            String lastname = values[2];
-            String phone = values[3];
-            userService.save(firstname, lastname, phone);
-        } else if (values[0].equals("2") && values.length == 3) {
-            String title = values[1];
-            String description = values[2];
-            projectService.save(title, description);
-        } else if (values[0].equals("3") && values.length == 3) {
-            String title = values[1];
-            String description = values[2];
-            taskService.save(title, description);
+        boolean isDone = createCommand.createEntity(values);
+        if (isDone) {
+            System.out.println("done!");
         } else {
             System.out.println("Invalid command syntax");
         }
     }
 
-    private void doReportCommand() throws IOException {
-        System.out.println("Для показа всех задач для определенного проекта и пользователя введите:\n" +
-                "userId/projectId\n");
-        String string = bf.readLine();
-        String[] values = string.split("/");
+    private void doDeleteCommand() {
+        System.out.println("Enter the command to delete\n" +
+                "- user: 1/id\n" +
+                "- project: 2/id\n" +
+                "- task: 3/id");
 
+        String command = bfReadLine();
+        String[] values = command.split("/");
         if (values.length != 2) {
-            System.out.println("Неверный синтаксис команды");
+            System.out.println("Invalid command syntax");
             return;
         }
 
-        Long userId = Long.parseLong(values[0]); //todo
-        Long projectId = Long.parseLong(values[1]);
-        Optional<Project> project = projectService.findById(projectId);
-        if (project.isPresent()) {
-            Collection<User> users = projectService.getAllUsersFromProject(projectId);
-            User user = null;
-            for (User u : users) {
-                if (u.getId().equals(userId)) {
-                    user = u;
-                    break;
-                }
-            }
-            if (user != null) {
-                userService.getAllTasksFromUser(userId).forEach(System.out::println);
-            }
+        boolean isDone = deleteCommand.deleteEntity(values);
+        if (isDone) {
+            System.out.println("done!");
+        } else {
+            System.out.println("Invalid command syntax");
         }
     }
 
-    private void doAssignCommand() throws IOException {
-        System.out.println("Для привязки пользователя к проекту выполните следующую команду:\n" +
-                "1/userId/projectId\n" +
-                "2/userId/taskId");
-        String string = bf.readLine();
-        String[] values = string.split("/");
+    private void doShowCommand() {
+        System.out.println("Enter the specified number to show all\n" +
+                "- users: 1\n" +
+                "- projects: 2\n" +
+                "- tasks: 3");
 
+        String command = bfReadLine();
+
+        Collection<?> collection = showCommand.getAll(command);
+        if (collection == null) {
+            System.out.println("Invalid command syntax");
+        } else if (collection.isEmpty()) {
+            System.out.println("Empty");
+        } else {
+            collection.forEach(System.out::println);
+        }
+    }
+
+    private void doAssignCommand() {
+        System.out.println("Enter the following command to assign:\n" +
+                "- user to the project: 1/userId/projectId\n" +
+                "- task to the user: 2/userId/taskId");
+
+        String command = bfReadLine();
+        String[] values = command.split("/");
         if (values.length != 3) {
-            System.out.println("Неверный синтаксис команды");
+            System.out.println("Invalid command syntax");
             return;
         }
 
-        Long userId = Long.parseLong(values[1]); //todo
-        Long projectOrTaskId = Long.parseLong(values[2]);
-        if (values[0].equals("1")) {
-            projectService.addUserForProject(userId, projectOrTaskId);
-        } else if (values[0].equals("2")) {
-            userService.addTaskForUser(projectOrTaskId, userId);
+        boolean isDone = assignCommand.assign(values);
+        if (isDone) {
+            System.out.println("done!");
         } else {
-            System.out.println("Неверный синтаксис команды");
+            System.out.println("Invalid command syntax");
         }
     }
 
-    private void doShowCommand() throws IOException {
-        System.out.println("Введите указанное число для показа:\n" +
-                "- пользователей: 1\n" +
-                "- проектов: 2\n" +
-                "- задач: 3");
-        String string = bf.readLine();
-        if (string.equalsIgnoreCase("1")) {
-            userService.findAll().forEach(System.out::println);
-        } else if (string.equalsIgnoreCase("2")) {
-            List<Project> projectList = projectService.findAll();
-            projectService.findAll().forEach(System.out::println);
-        } else if (string.equalsIgnoreCase("3")) {
-            taskService.findAll().forEach(System.out::println);
-        } else {
-            System.out.println("Неверный синтаксис команды");
-        }
-    }
+    private void doReportCommand() {
+        System.out.println("Enter the following command to generate the report\n" +
+                "userId/projectId\n");
 
-    private void doDeleteCommand() throws IOException {
-        System.out.println("Введите число, а также id для удаления:\n" +
-                "- пользователей: 1/id\n" +
-                "- проектов: 2/id\n" +
-                "- задач: 3/id");
-        String string = bf.readLine();
-        String[] values = string.split("/");
+        String command = bfReadLine();
+        String[] values = command.split("/");
         if (values.length != 2) {
-            System.out.println("Неверный синтаксис команды");
+            System.out.println("Invalid command syntax");
             return;
         }
 
-        Long id = Long.parseLong(values[1]);
-        if (values[0].equals("1")) {
-            userService.deleteById(id);
-        } else if (values[0].equals("2")) {
-            projectService.deleteById(id);
-        } else if (values[0].equals("3")) {
-            taskService.deleteById(id);
+        Collection<Task> collection = reportCommand.report(values);
+        if (collection == null) {
+            System.out.println("Invalid command syntax");
+        } else if (collection.isEmpty()) {
+            System.out.println("Empty");
         } else {
-            System.out.println("Неверный синтаксис команды");
+            collection.forEach(System.out::println);
         }
     }
 }

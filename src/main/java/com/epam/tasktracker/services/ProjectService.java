@@ -61,7 +61,7 @@ public class ProjectService {
             userRepository.save(user.get());
             projectRepository.save(project.get());
         } else {
-            System.out.println("Unknown User or Project"); //todo
+            throw new IllegalArgumentException("Unknown User or Project");
         }
     }
 }

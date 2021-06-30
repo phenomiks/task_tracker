@@ -14,4 +14,16 @@ public abstract class Command {
         this.projectService = projectService;
         this.taskService = taskService;
     }
+
+    protected UserService getUserService() {
+        return userService;
+    }
+
+    protected ProjectService getProjectService() {
+        return projectService;
+    }
+
+    protected TaskService getTaskService() {
+        return taskService;
+    }
 }
