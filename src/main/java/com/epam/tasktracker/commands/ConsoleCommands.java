@@ -1,4 +1,4 @@
-package com.epam.tasktracker;
+package com.epam.tasktracker.commands;
 
 public enum ConsoleCommands {
     CREATE,

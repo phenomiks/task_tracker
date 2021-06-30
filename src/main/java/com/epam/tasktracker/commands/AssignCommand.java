@@ -24,6 +24,10 @@ public class AssignCommand extends Command {
             return false;
         }
 
+        if (userId <= 0 || projectOrTaskId <= 0) {
+            return false;
+        }
+
         try {
             if (values[0].equals("1")) {
                 assignUserOnProject(userId, projectOrTaskId);
