@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TaskService {
@@ -17,10 +18,10 @@ public class TaskService {
     }
 
     private Task createTask(String title, String description) {
-        Task task = new Task();
-        task.setTitle(title);
-        task.setDescription(description);
-        return task;
+        return new Task().builder()
+                .setTitle(title)
+                .setDescription(description)
+                .build();
     }
 
     public void save(String title, String description) {
@@ -32,11 +33,11 @@ public class TaskService {
         return taskRepository.findAll();
     }
 
+    public Optional<Task> findById(Long id) {
+        return taskRepository.findById(id);
+    }
+
     public void deleteById(Long id) {
         taskRepository.deleteById(id);
     }
-
-//    public List<Task> findAllByUserIdAndProjectId(Long userId, Long projectId) {
-//        return taskRepository.findAllByUserIdAndProjectId(userId, projectId);
-//    }
 }

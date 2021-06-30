@@ -1,16 +1,15 @@
 package com.epam.tasktracker.entities;
 
+import com.epam.tasktracker.entities.builders.UserBuilder;
+import com.epam.tasktracker.entities.embeddables.EmbCreatedAndUpdatedFields;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -31,30 +30,29 @@ public class User {
     @Column(name = "phone", length = 20, nullable = false)
     private String phone;
 
-//    @ManyToMany(fetch = FetchType.EAGER)
-//    @JoinTable(name = "projects_users",
-//            joinColumns = @JoinColumn(name = "user_id"),
-//            inverseJoinColumns = @JoinColumn(name = "project_id"))
-//    private Collection<Project> projects;
-
     @ManyToOne
     @JoinColumn(name = "project_id")
     private Project project;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user")
     private Collection<Task> tasks;
 
-    @CreationTimestamp
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    @Embedded
+    private EmbCreatedAndUpdatedFields createdAtAndUpdatedAt = new EmbCreatedAndUpdatedFields();
 
     @Override
     public String toString() {
         return String.format("User: id = %d, firstname = %s, lastname = %s, phone = %s",
                 id, firstname, lastname, phone);
+    }
+
+    public User(String firstname, String lastname, String phone) {
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.phone = phone;
+    }
+
+    public UserBuilder builder() {
+        return new UserBuilder();
     }
 }

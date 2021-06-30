@@ -24,10 +24,10 @@ public class ProjectService {
     }
 
     private Project createProject(String title, String description) {
-        Project project = new Project();
-        project.setTitle(title);
-        project.setDescription(description);
-        return project;
+        return new Project().builder()
+                .setTitle(title)
+                .setDescription(description)
+                .build();
     }
 
     public void save(String title, String description) {
@@ -52,7 +52,7 @@ public class ProjectService {
     }
 
     @Transactional
-    public void addUserOnTheProjectById(Long userId, Long projectId) {
+    public void addUserForProject(Long userId, Long projectId) {
         Optional<User> user = userRepository.findById(userId);
         Optional<Project> project = projectRepository.findById(projectId);
         if (user.isPresent() && project.isPresent()) {
@@ -61,7 +61,7 @@ public class ProjectService {
             userRepository.save(user.get());
             projectRepository.save(project.get());
         } else {
-            throw new RuntimeException("Unknown User or Project");
+            System.out.println("Unknown User or Project"); //todo
         }
     }
 }

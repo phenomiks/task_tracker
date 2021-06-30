@@ -1,12 +1,11 @@
 package com.epam.tasktracker.entities;
 
+import com.epam.tasktracker.entities.builders.ProjectBuilder;
+import com.epam.tasktracker.entities.embeddables.EmbCreatedAndUpdatedFields;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.Collection;
 
 @Entity
@@ -28,29 +27,25 @@ public class Project {
     @Column(name = "closed")
     private boolean isClosed;
 
-//    @ManyToMany(fetch = FetchType.EAGER)
-//    @JoinTable(name = "projects_users",
-//            joinColumns = @JoinColumn(name = "project_id"),
-//            inverseJoinColumns = @JoinColumn(name = "user_id"))
-//    private Collection<User> users;
-
     @OneToMany(mappedBy = "project")
     private Collection<User> users;
 
-    @OneToMany(mappedBy = "project")
-    private Collection<Task> tasks;
-
-    @CreationTimestamp
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    @Embedded
+    private EmbCreatedAndUpdatedFields createdAtAndUpdatedAt = new EmbCreatedAndUpdatedFields();
 
     @Override
     public String toString() {
         return String.format("Project: id = %d, title = %s, description = %s, isClosed = %s",
                 id, title, description, isClosed);
+    }
+
+    public Project(String title, String description, boolean isClosed) {
+        this.title = title;
+        this.description = description;
+        this.isClosed = isClosed;
+    }
+
+    public ProjectBuilder builder() {
+        return new ProjectBuilder();
     }
 }

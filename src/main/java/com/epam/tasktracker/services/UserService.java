@@ -24,11 +24,11 @@ public class UserService {
     }
 
     private User createUser(String firstname, String lastname, String phone) {
-        User user = new User();
-        user.setFirstname(firstname);
-        user.setLastname(lastname);
-        user.setPhone(phone);
-        return user;
+        return new User().builder()
+                .setFirstname(firstname)
+                .setLastname(lastname)
+                .setPhone(phone)
+                .build();
     }
 
     public void save(String firstname, String lastname, String phone) {
@@ -49,7 +49,7 @@ public class UserService {
     }
 
     @Transactional
-    public void addTaskOnTheUserById(Long taskId, Long userId) {
+    public void addTaskForUser(Long taskId, Long userId) {
         Optional<User> user = userRepository.findById(userId);
         Optional<Task> task = taskRepository.findById(taskId);
         if (user.isPresent() && task.isPresent()) {
@@ -62,17 +62,7 @@ public class UserService {
         }
     }
 
-    public Collection<Task> getAllTasks(Long userId) {
-        Optional<User> user = userRepository.findById(userId);
-        if (user.isPresent()) {
-            user.get().getTasks().size();
-            return user.get().getTasks();
-        }
-        return null;
-    }
-
-    public List<Task> ffff(Long id) {
-        List<Task> list = userRepository.findByIdAndFetch(id);
-        return list;
+    public Collection<Task> getAllTasksFromUser(Long userId) {
+        return taskRepository.findAllByUserId(userId);
     }
 }

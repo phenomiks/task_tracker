@@ -1,5 +1,7 @@
 package com.epam.tasktracker.entities;
 
+import com.epam.tasktracker.entities.builders.TaskBuilder;
+import com.epam.tasktracker.entities.embeddables.EmbCreatedAndUpdatedFields;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -31,21 +33,22 @@ public class Task {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "project_id")
-    private Project project;
-
-    @CreationTimestamp
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    @Embedded
+    private EmbCreatedAndUpdatedFields createdAtAndUpdatedAt = new EmbCreatedAndUpdatedFields();
 
     @Override
     public String toString() {
-        return String.format("Task: id = %d, title = %s, description = %s, isClosed = %s",
+        return String.format("Project: id = %d, title = %s, description = %s, isClosed = %s",
                 id, title, description, isClosed);
+    }
+
+    public Task(String title, String description, boolean isClosed) {
+        this.title = title;
+        this.description = description;
+        this.isClosed = isClosed;
+    }
+
+    public TaskBuilder builder() {
+        return new TaskBuilder();
     }
 }
