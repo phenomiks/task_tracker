@@ -169,7 +169,7 @@ public class TaskTracker implements CommandLineRunner {
 
     private void doReportCommand() {
         System.out.println("Enter the following command to generate the report\n" +
-                "userId/projectId\n");
+                "userId/projectId");
 
         String command = bfReadLine();
         String[] values = command.split("/");
