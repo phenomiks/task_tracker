@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
-import java.util.List;
 
 @Component
 public class ShowCommand extends Command {
@@ -21,10 +20,8 @@ public class ShowCommand extends Command {
     }
 
     public Collection<?> getAll(String value) {
-        long id;
-        try {
-            id = Long.parseLong(value);
-        } catch (NumberFormatException e) {
+        Long id = parseLong(value);
+        if (id == null) {
             return null;
         }
 

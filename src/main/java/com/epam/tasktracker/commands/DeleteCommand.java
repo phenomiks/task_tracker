@@ -16,14 +16,8 @@ public class DeleteCommand extends Command {
     }
 
     public boolean deleteEntity(String[] values) {
-        long id;
-        try {
-            id = Long.parseLong(values[1]);
-        } catch (NumberFormatException e) {
-            return false;
-        }
-
-        if (id <= 0) {
+        Long id = parseLong(values[1]);
+        if (id == null || id <= 0) {
             return false;
         }
 

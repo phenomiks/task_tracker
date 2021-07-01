@@ -15,16 +15,9 @@ public class AssignCommand extends Command {
     }
 
     public boolean assign(String[] values) {
-        long userId;
-        long projectOrTaskId;
-        try {
-            userId = Long.parseLong(values[1]);
-            projectOrTaskId = Long.parseLong(values[2]);
-        } catch (NumberFormatException e) {
-            return false;
-        }
-
-        if (userId <= 0 || projectOrTaskId <= 0) {
+        Long userId = parseLong(values[1]);
+        Long projectOrTaskId = parseLong(values[2]);
+        if (userId == null || projectOrTaskId == null || userId <= 0 || projectOrTaskId <= 0) {
             return false;
         }
 

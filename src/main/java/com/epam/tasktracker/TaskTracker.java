@@ -2,9 +2,6 @@ package com.epam.tasktracker;
 
 import com.epam.tasktracker.commands.*;
 import com.epam.tasktracker.entities.Task;
-import com.epam.tasktracker.services.ProjectService;
-import com.epam.tasktracker.services.TaskService;
-import com.epam.tasktracker.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
@@ -18,22 +15,22 @@ import java.util.Collection;
 
 @Component
 public class TaskTracker implements CommandLineRunner {
-    private final UserService userService;
-    private final ProjectService projectService;
-    private final TaskService taskService;
-
-    @Autowired
-    private CreateCommand createCommand;
-    @Autowired
-    private DeleteCommand deleteCommand;
-    @Autowired
-    private ShowCommand showCommand;
-    @Autowired
-    private AssignCommand assignCommand;
-    @Autowired
-    private ReportCommand reportCommand;
+    private final CreateCommand createCommand;
+    private final DeleteCommand deleteCommand;
+    private final ShowCommand showCommand;
+    private final AssignCommand assignCommand;
+    private final ReportCommand reportCommand;
 
     private BufferedReader bf;
+
+    @Autowired
+    public TaskTracker(CreateCommand createCommand, DeleteCommand deleteCommand, ShowCommand showCommand, AssignCommand assignCommand, ReportCommand reportCommand) {
+        this.createCommand = createCommand;
+        this.deleteCommand = deleteCommand;
+        this.showCommand = showCommand;
+        this.assignCommand = assignCommand;
+        this.reportCommand = reportCommand;
+    }
 
     @PostConstruct
     public void init() {
@@ -49,15 +46,8 @@ public class TaskTracker implements CommandLineRunner {
         }
     }
 
-    @Autowired
-    public TaskTracker(UserService userService, ProjectService projectService, TaskService taskService) {
-        this.userService = userService;
-        this.projectService = projectService;
-        this.taskService = taskService;
-    }
-
     @Override
-    public void run(String... args) throws IOException {
+    public void run(String... args) {
         System.out.println("----------------------------------------\n" +
                 "This is a console application for tracking tasks.\n" +
                 "----------------------------------------\n" +

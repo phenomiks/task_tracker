@@ -36,6 +36,10 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public void save(Collection<User> users) {
+        users.forEach(userRepository::save);
+    }
+
     public List<User> findAll() {
         return userRepository.findAll();
     }

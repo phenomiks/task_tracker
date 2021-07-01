@@ -5,6 +5,7 @@ import com.epam.tasktracker.repositories.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +28,10 @@ public class TaskService {
     public void save(String title, String description) {
         Task task = createTask(title, description);
         taskRepository.save(task);
+    }
+
+    public void save(Collection<Task> tasks) {
+        tasks.forEach(taskRepository::save);
     }
 
     public List<Task> findAll() {

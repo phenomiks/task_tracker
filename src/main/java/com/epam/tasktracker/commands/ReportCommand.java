@@ -21,16 +21,9 @@ public class ReportCommand extends Command {
     }
 
     public Collection<Task> report(String[] values) {
-        long userId;
-        long projectId;
-        try {
-            userId = Long.parseLong(values[0]);
-            projectId = Long.parseLong(values[1]);
-        } catch (NumberFormatException e) {
-            return null;
-        }
-
-        if (userId <= 0 || projectId <= 0) {
+        Long userId = parseLong(values[0]);
+        Long projectId = parseLong(values[1]);
+        if (userId == null || projectId == null || userId <= 0 || projectId <= 0) {
             return null;
         }
 
@@ -38,7 +31,7 @@ public class ReportCommand extends Command {
         if (project.isPresent()) {
             Collection<User> users = getProjectService().getAllUsersFromProject(projectId);
             Optional<User> user = users.stream()
-                    .filter(u -> userId == u.getId())
+                    .filter(u -> userId.equals(u.getId()))
                     .findFirst();
 
             if (user.isPresent()) {

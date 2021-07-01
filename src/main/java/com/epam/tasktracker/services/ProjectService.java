@@ -35,6 +35,10 @@ public class ProjectService {
         projectRepository.save(project);
     }
 
+    public void save(Collection<Project> projects) {
+        projects.forEach(projectRepository::save);
+    }
+
     public List<Project> findAll() {
         return projectRepository.findAll();
     }

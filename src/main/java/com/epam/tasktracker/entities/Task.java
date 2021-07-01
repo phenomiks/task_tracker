@@ -4,11 +4,8 @@ import com.epam.tasktracker.entities.builders.TaskBuilder;
 import com.epam.tasktracker.entities.embeddables.EmbCreatedAndUpdatedFields;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tasks")

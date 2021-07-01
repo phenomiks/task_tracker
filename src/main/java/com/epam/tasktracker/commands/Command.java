@@ -26,4 +26,15 @@ public abstract class Command {
     protected TaskService getTaskService() {
         return taskService;
     }
+
+    protected Long parseLong(String value) {
+        long id;
+        try {
+            id = Long.parseLong(value);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+
+        return id;
+    }
 }
