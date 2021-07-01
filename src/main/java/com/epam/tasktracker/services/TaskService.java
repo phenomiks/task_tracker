@@ -27,6 +27,16 @@ public class TaskService {
 
     public void save(String title, String description) {
         Task task = createTask(title, description);
+        task.setParentTask(null);
+        taskRepository.save(task);
+    }
+
+    public void save(String title, String description, Long parentId) {
+        Task task = createTask(title, description);
+        Task par = findById(parentId).get();
+        task.setParentTask(par); //todo
+        par.getSubtasks().add(task);
+        taskRepository.save(par);
         taskRepository.save(task);
     }
 

@@ -24,6 +24,7 @@ CREATE TABLE users
 CREATE TABLE tasks
 (
     id          BIGSERIAL PRIMARY KEY,
+    parent_id   BIGINT,
     title       VARCHAR NOT NULL,
     description VARCHAR,
     closed      BOOLEAN   DEFAULT false,

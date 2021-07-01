@@ -21,6 +21,8 @@ public class CreateCommand extends Command {
             createNewProject(values);
         } else if (values[0].equals("3") && values.length == 3) {
             createNewTask(values);
+        } else if (values[0].equals("4") && values.length == 4) {
+            createNewSubtask(values);
         } else {
             return false;
         }
@@ -44,5 +46,12 @@ public class CreateCommand extends Command {
         String title = values[1];
         String description = values[2];
         getTaskService().save(title, description);
+    }
+
+    private void createNewSubtask(String[] values) {
+        String title = values[1];
+        String description = values[2];
+        Long parentTaskId = parseLong(values[3]);
+        getTaskService().save(title, description, parentTaskId);
     }
 }

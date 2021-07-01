@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.*;
 
 @Entity
 @Table(name = "tasks")
@@ -30,13 +31,26 @@ public class Task {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Transient
+    @Column(name = "parent_id")
+    private Long parentId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="parent_id")
+    private Task parentTask;
+
+    @OneToMany(mappedBy="parentTask", fetch = FetchType.EAGER, orphanRemoval=true)
+    private List<Task> subtasks = new ArrayList<>();
+
     @Embedded
     private EmbCreatedAndUpdatedFields createdAtAndUpdatedAt = new EmbCreatedAndUpdatedFields();
 
     @Override
     public String toString() {
-        return String.format("Project: id = %d, title = %s, description = %s, isClosed = %s",
-                id, title, description, isClosed);
+        Long ss = Objects.requireNonNullElse(parentId, -1L);
+
+        return String.format("Task: id = %d, title = %s, description = %s, isClosed = %s, pa = %d",
+                id, title, description, isClosed, ss);
     }
 
     public Task(String title, String description, boolean isClosed) {

@@ -95,7 +95,8 @@ public class TaskTracker implements CommandLineRunner {
         System.out.println("Enter the command to create\n" +
                 "- user: 1/firstname/lastname/phone\n" +
                 "- project: 2/title/description\n" +
-                "- task: 3/title/description");
+                "- task: 3/title/description\n" +
+                "- subtask: 4/title/description/parentTaskId");
 
         String command = bfReadLine();
         String[] values = command.split("/");
