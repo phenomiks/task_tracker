@@ -19,10 +19,10 @@ public class CreateCommand extends Command {
             createNewUser(values);
         } else if (values[0].equals("2") && values.length == 3) {
             createNewProject(values);
-        } else if (values[0].equals("3") && values.length == 3) {
-            createNewTask(values);
-        } else if (values[0].equals("4") && values.length == 4) {
-            createNewSubtask(values);
+        } else if (values[0].equals("3") && values.length == 4) {
+            return createNewTask(values);
+        } else if (values[0].equals("4") && values.length == 5) {
+            return createNewSubtask(values);
         } else {
             return false;
         }
@@ -42,16 +42,27 @@ public class CreateCommand extends Command {
         getProjectService().save(title, description);
     }
 
-    private void createNewTask(String[] values) {
+    private boolean createNewTask(String[] values) {
         String title = values[1];
         String description = values[2];
-        getTaskService().save(title, description);
+        Long leadTime = parseLong(values[3]);
+        if (leadTime == null || leadTime <= 0) {
+            return false;
+        }
+
+        getTaskService().save(title, description, leadTime);
+        return true;
     }
 
-    private void createNewSubtask(String[] values) {
+    private boolean createNewSubtask(String[] values) {
         String title = values[1];
         String description = values[2];
-        Long parentTaskId = parseLong(values[3]);
-        getTaskService().save(title, description, parentTaskId);
+        Long leadTime = parseLong(values[3]);
+        Long parentTaskId = parseLong(values[4]);
+        if (leadTime == null || parentTaskId == null || parentTaskId <= 0 || leadTime <= 0) {
+            return false;
+        }
+
+        return getTaskService().save(title, description, leadTime, parentTaskId);
     }
 }

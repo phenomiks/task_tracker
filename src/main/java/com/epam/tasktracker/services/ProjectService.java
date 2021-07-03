@@ -35,6 +35,7 @@ public class ProjectService {
         projectRepository.save(project);
     }
 
+    @Transactional
     public void save(Collection<Project> projects) {
         projects.forEach(projectRepository::save);
     }

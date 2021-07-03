@@ -1,14 +1,17 @@
 [
   {
     "title": "Create task tracker",
-    "description": "Task description"
+    "description": "Task description",
+    "leadTime": "1000"
   },
   {
     "title": "Create web-site",
-    "description": "Web-site description"
+    "description": "Web-site description",
+    "leadTime": "2000"
   },
   {
     "title": "Create mobile app",
-    "description": "Mobile app description"
+    "description": "Mobile app description",
+    "leadTime": "3000"
   }
 ]

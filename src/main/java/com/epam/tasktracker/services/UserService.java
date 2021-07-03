@@ -36,6 +36,7 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
     public void save(Collection<User> users) {
         users.forEach(userRepository::save);
     }

@@ -27,6 +27,7 @@ CREATE TABLE tasks
     parent_id   BIGINT,
     title       VARCHAR NOT NULL,
     description VARCHAR,
+    lead_time   BIGINT    DEFAULT 0,
     closed      BOOLEAN   DEFAULT false,
     user_id     BIGINT REFERENCES users (id),
     created_at  TIMESTAMP DEFAULT current_timestamp,
