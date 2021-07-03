@@ -6,5 +6,7 @@ public enum ConsoleCommands {
     DELETE,
     EXIT,
     ASSIGN,
-    REPORT
+    REPORT,
+    CLOSE,
+    TIME
 }

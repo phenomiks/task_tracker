@@ -2,10 +2,10 @@ package com.epam.tasktracker.entities;
 
 import com.epam.tasktracker.entities.builders.TaskBuilder;
 import com.epam.tasktracker.entities.embeddables.EmbCreatedAndUpdatedFields;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
+import java.util.*;
 
 @Entity
 @Table(name = "tasks")
@@ -23,6 +23,9 @@ public class Task {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "lead_time")
+    private Long leadTime;
+
     @Column(name = "closed")
     private boolean isClosed;
 
@@ -30,18 +33,49 @@ public class Task {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @Column(name = "parent_id", insertable = false, updatable = false)
+    private Long parentId;
+
+    @ManyToOne
+    @JoinColumn(name="parent_id")
+    private Task parentTask;
+
+    @OneToMany(mappedBy="parentTask", fetch = FetchType.EAGER, orphanRemoval=true)
+    private List<Task> subtasks;
+
     @Embedded
     private EmbCreatedAndUpdatedFields createdAtAndUpdatedAt = new EmbCreatedAndUpdatedFields();
 
-    @Override
-    public String toString() {
-        return String.format("Project: id = %d, title = %s, description = %s, isClosed = %s",
-                id, title, description, isClosed);
+    @Transient
+    @Getter(value = AccessLevel.NONE)
+    @Setter(value = AccessLevel.NONE)
+    private long remainingTime;
+
+    public long getRemainingTime() {
+        remainingTime = 0;
+        recursiveSumOfRemainingTime(this);
+        return remainingTime;
     }
 
-    public Task(String title, String description, boolean isClosed) {
+    private void recursiveSumOfRemainingTime(Task task) {
+        remainingTime += task.getLeadTime();
+        for (Task t : task.getSubtasks()) {
+            recursiveSumOfRemainingTime(t);
+        }
+    }
+
+    @Override
+    public String toString() {
+        Long parentTaskId = Objects.requireNonNullElse(parentId, -1L);
+
+        return String.format("Task: id = %d, title = %s, description = %s, leadTime = %s, isClosed = %s, parentTaskId = %d",
+                id, title, description, leadTime, isClosed, parentTaskId);
+    }
+
+    public Task(String title, String description, Long leadTime, boolean isClosed) {
         this.title = title;
         this.description = description;
+        this.leadTime = leadTime;
         this.isClosed = isClosed;
     }
 

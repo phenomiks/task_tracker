@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -32,16 +32,26 @@ public class DataLoader {
     @PostConstruct
     public void init() throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
-        File usersFile = new File("src/main/resources/assets/users.json");
-        File projectsFile = new File("src/main/resources/assets/projects.json");
-        File tasksFile = new File("src/main/resources/assets/tasks.json");
 
-        List<User> users = Arrays.asList(objectMapper.readValue(usersFile, User[].class));
-        List<Project> projects = Arrays.asList(objectMapper.readValue(projectsFile, Project[].class));
-        List<Task> tasks = Arrays.asList(objectMapper.readValue(tasksFile, Task[].class));
+        String usersFile = "assets/users.json";
+        String projectsFile = "assets/projects.json";
+        String tasksFile = "assets/tasks.json";
+        List<User> users = Arrays.asList(objectMapper.readValue(getFileFromResourceAsStream(usersFile), User[].class));
+        List<Project> projects = Arrays.asList(objectMapper.readValue(getFileFromResourceAsStream(projectsFile), Project[].class));
+        List<Task> tasks = Arrays.asList(objectMapper.readValue(getFileFromResourceAsStream(tasksFile), Task[].class));
 
         userService.save(users);
         projectService.save(projects);
         taskService.save(tasks);
+    }
+
+    private InputStream getFileFromResourceAsStream(String fileName) {
+        ClassLoader classLoader = getClass().getClassLoader();
+        InputStream inputStream = classLoader.getResourceAsStream(fileName);
+
+        if (inputStream == null) {
+            throw new IllegalArgumentException("File not found: " + fileName);
+        }
+        return inputStream;
     }
 }

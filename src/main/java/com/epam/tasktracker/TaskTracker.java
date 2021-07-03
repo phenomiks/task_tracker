@@ -20,16 +20,22 @@ public class TaskTracker implements CommandLineRunner {
     private final ShowCommand showCommand;
     private final AssignCommand assignCommand;
     private final ReportCommand reportCommand;
+    private final CloseCommand closeCommand;
+    private final TimeCommand timeCommand;
 
     private BufferedReader bf;
 
     @Autowired
-    public TaskTracker(CreateCommand createCommand, DeleteCommand deleteCommand, ShowCommand showCommand, AssignCommand assignCommand, ReportCommand reportCommand) {
+    public TaskTracker(CreateCommand createCommand, DeleteCommand deleteCommand, ShowCommand showCommand,
+                       AssignCommand assignCommand, ReportCommand reportCommand, CloseCommand closeCommand,
+                       TimeCommand timeCommand) {
         this.createCommand = createCommand;
         this.deleteCommand = deleteCommand;
         this.showCommand = showCommand;
         this.assignCommand = assignCommand;
         this.reportCommand = reportCommand;
+        this.closeCommand = closeCommand;
+        this.timeCommand = timeCommand;
     }
 
     @PostConstruct
@@ -57,6 +63,8 @@ public class TaskTracker implements CommandLineRunner {
                 "SHOW - to show a list of user/project/task;\n" +
                 "ASSIGN - to bind a user to a project/task to a user;\n" +
                 "REPORT - to generate the report of all tasks created for specified project by specified user;\n" +
+                "CLOSE - to close task and all his subtasks;\n" +
+                "TIME - to get the remaining time;\n" +
                 "EXIT - to exit the application.\n");
 
         while (true) {
@@ -73,6 +81,10 @@ public class TaskTracker implements CommandLineRunner {
                 doAssignCommand();
             } else if (command.equalsIgnoreCase(ConsoleCommands.REPORT.name())) {
                 doReportCommand();
+            } else if (command.equalsIgnoreCase(ConsoleCommands.CLOSE.name())) {
+                doCloseCommand();
+            } else if (command.equalsIgnoreCase(ConsoleCommands.TIME.name())) {
+                doTimeCommand();
             } else if (command.equalsIgnoreCase(ConsoleCommands.EXIT.name())) {
                 break;
             } else {
@@ -95,7 +107,8 @@ public class TaskTracker implements CommandLineRunner {
         System.out.println("Enter the command to create\n" +
                 "- user: 1/firstname/lastname/phone\n" +
                 "- project: 2/title/description\n" +
-                "- task: 3/title/description");
+                "- task: 3/title/description/leadTime\n" +
+                "- subtask: 4/title/description/leadTime/parentTaskId");
 
         String command = bfReadLine();
         String[] values = command.split("/");
@@ -185,6 +198,37 @@ public class TaskTracker implements CommandLineRunner {
             System.out.println("Empty");
         } else {
             collection.forEach(System.out::println);
+        }
+    }
+
+    private void doCloseCommand() {
+        System.out.println("Enter the following command to close\n" +
+                "- task and all his subtasks: 3/taskId");
+
+        String command = bfReadLine();
+        String[] values = command.split("/");
+        if (values.length != 2) {
+            System.out.println("Invalid command syntax");
+            return;
+        }
+
+        boolean isDone = closeCommand.close(values);
+        if (isDone) {
+            System.out.println("done!");
+        } else {
+            System.out.println("Invalid command syntax");
+        }
+    }
+
+    private void doTimeCommand() {
+        System.out.println("Enter the task id to get the remaining time");
+
+        String command = bfReadLine();
+        Long remainingTime = timeCommand.time(command);
+        if (remainingTime == null) {
+            System.out.println("Invalid command syntax");
+        } else {
+            System.out.println("Remaining time: " + remainingTime);
         }
     }
 }
