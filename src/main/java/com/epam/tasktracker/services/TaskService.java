@@ -39,6 +39,9 @@ public class TaskService {
         Optional<Task> parentTask = findById(parentId);
 
         if (parentTask.isPresent()) {
+            if (parentTask.get().isClosed()) {
+                return false;
+            }
             subtask.setParentTask(parentTask.get());
             parentTask.get().getSubtasks().add(subtask);
             taskRepository.save(parentTask.get());
